@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+function main ()
+{
+  startingDir=$PWD
+  while [ ! -d ".git" ]; do
+    cd ..
+  done
+
+  declare -A diffMap
+  gitDiffs=$(git diff --name-only)
+  for i in $gitDiffs; do
+    topLevelDir=$(echo "$i" | cut -d "/" -f 1)
+    diffMap[$topLevelDir]="${diffMap[$topLevelDir]} $i"
+    # echo "$topLevelDir: ${diffMap[$topLevelDir]}"
+  done
+
+  for i in "${!diffMap[@]}"; do
+    outputDir="$i-$(date +%Y%m%d).tar.gz"
+    tar czf $outputDir ${diffMap[$i]}
+    mv $outputDir $startingDir/$outputDir
+  done
+}
+
+main "$@"
