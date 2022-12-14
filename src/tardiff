@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+function clean ()
+{
+  rm -f *.tar.gz
+}
+
 function main ()
 {
   startingDir=$PWD
@@ -12,14 +17,20 @@ function main ()
   for i in $gitDiffs; do
     topLevelDir=$(echo "$i" | cut -d "/" -f 1)
     diffMap[$topLevelDir]="${diffMap[$topLevelDir]} $i"
-    # echo "$topLevelDir: ${diffMap[$topLevelDir]}"
   done
 
   for i in "${!diffMap[@]}"; do
-    outputDir="$i-$(date +%Y%m%d).tar.gz"
-    tar czf $outputDir ${diffMap[$i]}
-    mv $outputDir $startingDir/$outputDir
+    tarballDir="$i-$(date +%Y%m%d).tar.gz"
+    tar czf $tarballDir ${diffMap[$i]}
+    if [ $PWD != "$startingDir" ]; then
+      mv $tarballDir $startingDir/$tarballDir
+    fi
   done
 }
 
-main "$@"
+if declare -f "$1" > /dev/null; then
+  "$@"
+else
+  main
+fi
+
