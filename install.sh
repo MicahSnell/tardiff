@@ -17,7 +17,9 @@ fi
 cp src/tardiff "${installDir}"
 if [ "$?" -eq 0 ]; then
   echo "Copied 'tardiff' to ${installDir}"
+  exit 0
 else
   echo "Failed to copy 'tardiff' to ${installDir}"
+  exit 1
 fi
 
