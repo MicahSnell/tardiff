@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 function clean ()
 {
@@ -7,25 +7,33 @@ function clean ()
 
 function main ()
 {
-  startingDir=$PWD
+  # move to the .git directory
+  startingDir="${PWD}"
   while [ ! -d ".git" ]; do
     cd ..
   done
 
-  declare -A diffMap
-  gitDiffs=$(git diff --name-only)
-  for i in $gitDiffs; do
-    topLevelDir=$(echo "$i" | cut -d "/" -f 1)
-    diffMap[$topLevelDir]="${diffMap[$topLevelDir]} $i"
+
+  # map all diffs based on their top level directory
+  declare -A tarballs
+  readarray -t gitDiffs < <(git diff --name-only)
+  for diff in "${gitDiffs[@]}"; do
+    topLevelDir=$(echo "${diff}" | cut -d "/" -f 1)
+    tarballs["${topLevelDir}"]="${tarballs[${topLevelDir}]} ${diff}"
   done
 
-  for i in "${!diffMap[@]}"; do
-    tarballDir="$i-$(date +%Y%m%d).tar.gz"
-    tar czf $tarballDir ${diffMap[$i]}
-    if [ $PWD != "$startingDir" ]; then
-      mv $tarballDir $startingDir/$tarballDir
+  # make a tar archive of changed files, use top level directory as name
+  for tarball in "${!tarballs[@]}"; do
+    tarballDir="${tarball}-$(date +%Y%m%d).tar.gz"
+    tar czf "${tarballDir}" $(echo "${tarballs[${tarball}]}" | tr -d "'")
+
+    # move tarball to the current directory
+    if [ "${PWD}" != "${startingDir}" ]; then
+      mv "${tarballDir}" "${startingDir}/${tarballDir}"
     fi
   done
+
+  exit 0
 }
 
 if declare -f "$1" > /dev/null; then

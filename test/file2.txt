@@ -1,1 +1,2 @@
 First change to file 2
+Second change to file 2
