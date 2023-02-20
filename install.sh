@@ -3,14 +3,13 @@
 usage ()
 {
   cat <<EOF
-usage: ${0} [-h] {-b, -g, -p}
+usage: ${0} [-h] {-b, -p}
 
 installs the specified version of tardiff to the given path
 
 options:
   -h, --help    show this help message and exit
   -b, --bash    installs the bash version of tardiff
-  -g, --go      installs the go version of tardiff
   -p, --python  installs the python version of tardiff
 EOF
 }
@@ -52,10 +51,6 @@ else
       ;;
     -b|--bash)
       extension=".sh"
-      installTarget
-      ;;
-    -g|--go)
-      extension=".go"
       installTarget
       ;;
     -p|--python)
