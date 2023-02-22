@@ -33,6 +33,7 @@ installTarget ()
   cp "src/tardiff${extension}" "${installDir}/tardiff"
   if [[ $? -eq 0 ]]; then
     echo "Copied 'tardiff${extension}' to ${installDir}/tardiff"
+    chmod 755 "${installDir}/tardiff"
     exit 0
   else
     echo "Failed to copy 'tardiff${extension}' to ${installDir}/tardiff"
